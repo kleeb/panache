@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:panache_core/panache_core.dart';
+import 'dart:io';
 
-enum DriveAction { login, logout, save, list }
+enum DriveAction { login, logout, save, list, copyToClipboard }
 
 class DriveMenu extends StatelessWidget {
   final ThemeModel model;
@@ -29,6 +31,9 @@ class DriveMenu extends StatelessWidget {
           case DriveAction.save:
             _onExportToDrive(context, model);
             break;
+          case DriveAction.copyToClipboard:
+            _onCopyToClipboard(context, model);
+            break;
           case DriveAction.logout:
             userService.logout();
             break;
@@ -47,7 +52,17 @@ class DriveMenu extends StatelessWidget {
         errorLabel: 'Sorry, the export failed... :('));
   }
 
+  void _onCopyToClipboard(BuildContext context, ThemeModel model) async {
+    Clipboard.setData(ClipboardData(text: model.themeCode));
+
+    Scaffold.of(context).showSnackBar(_buildSnackBar(
+        result: true,
+        successLabel: 'Copied to clipboard',
+        errorLabel: 'Sorry, the export failed... :('));
+  }
+
   void _onLoginRequest(BuildContext context, ThemeModel model) async {
+    print('userService = $userService');
     final result = await userService.login();
     if (result)
       Scaffold.of(context).showSnackBar(_buildSnackBar(
@@ -58,6 +73,18 @@ class DriveMenu extends StatelessWidget {
 
   List<PopupMenuItem<DriveAction>> _buildActions() {
     final actions = <PopupMenuItem<DriveAction>>[];
+    if (Platform.isMacOS) {
+      actions.add(PopupMenuItem<DriveAction>(
+          value: DriveAction.copyToClipboard,
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.content_copy),
+              Expanded(
+                  child: Text('Copy to clipboard', textAlign: TextAlign.right)),
+            ],
+          )));
+      return actions;
+    }
     model.user != null
         ? actions.addAll([
             PopupMenuItem<DriveAction>(

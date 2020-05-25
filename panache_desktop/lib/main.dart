@@ -1,13 +1,17 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:panache_core/panache_core.dart';
+import 'package:panache_desktop/services/desktop_link_service.dart';
 import 'package:panache_services/panache_services.dart';
 import 'package:panache_ui/panache_ui.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:provider/provider.dart';
 
 import 'services/desktop_local_data.dart';
 
@@ -41,14 +45,19 @@ class PanacheApp extends StatelessWidget {
     final theme = Theme.of(context);
     return ScopedModel<ThemeModel>(
       model: themeModel,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: buildAppTheme(theme, panachePrimarySwatch),
-        home: LaunchScreen(model: themeModel),
-        routes: {
-          '/home': (context) => LaunchScreen(model: themeModel),
-          '/editor': (context) => PanacheEditorScreen(),
-        },
+      child: MultiProvider(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: buildAppTheme(theme, panachePrimarySwatch),
+          home: LaunchScreen(model: themeModel),
+          routes: {
+            '/home': (context) => LaunchScreen(model: themeModel),
+            '/editor': (context) => PanacheEditorScreen(),
+          },
+        ),
+        providers: <SingleChildCloneableWidget>[
+          Provider<LinkService>.value(value: DesktopLinkService())
+        ],
       ),
     );
   }
@@ -66,28 +75,33 @@ class DesktopCloudService implements CloudService {
   @override
   Future<bool> get authenticated => Future.value(true);
 
-  @override
-  // TODO: implement currentUser$
-  Stream<User> get currentUser$ => null;
+  StreamController<User> _userStreamer = StreamController<User>();
 
   @override
-  Future login() {
+  Stream<User> get currentUser$ => _userStreamer.stream;
+
+  @override
+  Future login() async {
     print('DesktopCloudService.login... ');
-    // TODO: implement login
-    return null;
+    _userStreamer.add(User('Desktop', ''));
+    return true;
+  }
+
+  dispose() {
+    _userStreamer.close();
   }
 
   @override
   Future logout() {
     print('DesktopCloudService.logout... ');
-    // TODO: implement logout
+    _userStreamer.add(null);
     return null;
   }
 
   @override
   Future save(String content) {
     print('DesktopCloudService.save... ');
-    // TODO: implement save
+    Clipboard.setData(ClipboardData(text: content));
     return null;
   }
 }
