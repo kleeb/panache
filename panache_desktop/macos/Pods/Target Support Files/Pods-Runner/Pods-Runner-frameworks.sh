@@ -197,17 +197,17 @@ if [ -r "${ARTIFACT_LIST_FILE}" ]; then
 fi
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework "${PODS_ROOT}/../Flutter/ephemeral/.symlinks/flutter/darwin-x64/FlutterMacOS.framework"
+  install_framework "${PODS_ROOT}/../Flutter/ephemeral/.symlinks/flutter/darwin-x64-release/FlutterMacOS.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/path_provider_macos/path_provider_macos.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/shared_preferences_macos/shared_preferences_macos.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework "${PODS_ROOT}/../Flutter/ephemeral/.symlinks/flutter/darwin-x64/FlutterMacOS.framework"
+  install_framework "${PODS_ROOT}/../Flutter/ephemeral/.symlinks/flutter/darwin-x64-release/FlutterMacOS.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/path_provider_macos/path_provider_macos.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/shared_preferences_macos/shared_preferences_macos.framework"
 fi
 if [[ "$CONFIGURATION" == "Profile" ]]; then
-  install_framework "${PODS_ROOT}/../Flutter/ephemeral/.symlinks/flutter/darwin-x64/FlutterMacOS.framework"
+  install_framework "${PODS_ROOT}/../Flutter/ephemeral/.symlinks/flutter/darwin-x64-release/FlutterMacOS.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/path_provider_macos/path_provider_macos.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/shared_preferences_macos/shared_preferences_macos.framework"
 fi
